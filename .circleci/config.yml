@@ -206,6 +206,8 @@ jobs:
           name: Setup dev build
           command: |
             echo "Setting up a build on a development feature branch ${CIRCLE_BRANCH}"
+            PR=`echo ${CIRCLE_BRANCH} | cut -d"-" -f1-2`
+            echo "Will use ${PR} as the development service name suffix"
       - run:
           name: tag and push dev images
           command: |
@@ -239,7 +241,8 @@ jobs:
       - deploy:
           name: rolling update image
           command: |
-            sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/app-deployment.yaml
+            sed -i -f deploy/dynamic-deploy.sed deploy/development/app-deployment-dyn.yaml
+            sed -i -f deploy/dynamic-deploy.sed deploy/development/app-service-dyn.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/admin-deployment.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/dashboard-deployment.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/grc-clamav-deployment.yaml
