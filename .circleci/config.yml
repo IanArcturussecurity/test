@@ -220,7 +220,7 @@ jobs:
             docker tag grc-dashboard "${ECR_ENDPOINT_DEV}:grc-dashboard-${CIRCLE_SHA1}"
 
             docker push "${ECR_ENDPOINT_DEV}:grc-admin-${CIRCLE_SHA1}"
-            docker push "${ECR_ENDPOINT_DEV}:grc-app-${CIRCLE_SHA1}"
+            docker push "${ECR_ENDPOINT_DEV}:grc-app-${PR}"
             docker push "${ECR_ENDPOINT_DEV}:grc-dashboard-${CIRCLE_SHA1}"
 
       - run:
