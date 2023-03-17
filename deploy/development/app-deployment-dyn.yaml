@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grc-app-[PR]
+  name: grc-app-$PR
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: grc-app-[PR]
+      app: grc-app-$PR
   template:
     metadata:
       labels:
-        app: grc-app-[PR]
+        app: grc-app-$PR
     spec:
       containers:
       - name: grc-app
-        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/pet/grc-dev-ecr:[CIRCLE_SHA1]
+        image: 754256621582.dkr.ecr.eu-west-2.amazonaws.com/pet/grc-dev-ecr:grc-app-$PR
         imagePullPolicy: Always
         ports:
         - containerPort: 3000

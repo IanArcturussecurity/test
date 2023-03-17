@@ -207,7 +207,7 @@ jobs:
           name: Setup dev build
           command: |
             echo "Setting up a build on a development feature branch ${CIRCLE_BRANCH}"
-            PR=`echo ${CIRCLE_BRANCH} | cut -d"-" -f1-2`
+            PR=`echo ${CIRCLE_BRANCH} | cut -d"-" -f1-2 | awk '{print tolower($0)}'`
             echo "Will use ${PR} as the development service name suffix"
       - run:
           name: tag and push dev images
@@ -216,18 +216,12 @@ jobs:
             echo ${login} | docker login --username AWS --password-stdin 754256621582.dkr.ecr.eu-west-2.amazonaws.com
  
             docker tag grc-admin "${ECR_ENDPOINT_DEV}:grc-admin-${CIRCLE_SHA1}"
-            docker tag grc-admin "${ECR_ENDPOINT_DEV}:grc-admin-dev-latest"
-            docker tag grc-app "${ECR_ENDPOINT_DEV}:grc-app-${CIRCLE_SHA1}"
-            docker tag grc-app "${ECR_ENDPOINT_DEV}:grc-app-dev-latest"
+            docker tag grc-app "${ECR_ENDPOINT_DEV}:grc-app-${PR}"
             docker tag grc-dashboard "${ECR_ENDPOINT_DEV}:grc-dashboard-${CIRCLE_SHA1}"
-            docker tag grc-dashboard "${ECR_ENDPOINT_DEV}:grc-dashboard-dev-latest"
 
             docker push "${ECR_ENDPOINT_DEV}:grc-admin-${CIRCLE_SHA1}"
-            docker push "${ECR_ENDPOINT_DEV}:grc-admin-dev-latest"
             docker push "${ECR_ENDPOINT_DEV}:grc-app-${CIRCLE_SHA1}"
-            docker push "${ECR_ENDPOINT_DEV}:grc-app-dev-latest"
             docker push "${ECR_ENDPOINT_DEV}:grc-dashboard-${CIRCLE_SHA1}"
-            docker push "${ECR_ENDPOINT_DEV}:grc-dashboard-dev-latest"
 
       - run:
           name: Authenticate to LIVE cluster
@@ -242,8 +236,9 @@ jobs:
       - deploy:
           name: rolling update image
           command: |
-            sed -i -f deploy/dynamic-deploy.sed deploy/development/app-deployment-dyn.yaml
-            sed -i -f deploy/dynamic-deploy.sed deploy/development/app-service-dyn.yaml
+            
+            sed -i -e "s/\$PR/${PR}/" deploy/development/app-deployment-dyn.yaml
+            sed -i -e "s/\$PR/${PR}/"deploy/development/app-service-dyn.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/admin-deployment.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/dashboard-deployment.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/grc-clamav-deployment.yaml
