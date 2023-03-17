@@ -242,8 +242,8 @@ jobs:
       - deploy:
           name: rolling update image
           command: |
-            sed -i -f <(envsubst < deploy/dynamic-deploy.sed) deploy/development/app-deployment-dyn.yaml
-            sed -i -f <(envsubst < deploy/dynamic-deploy.sed) deploy/development/app-service-dyn.yaml
+            sed -i -f deploy/dynamic-deploy.sed deploy/development/app-deployment-dyn.yaml
+            sed -i -f deploy/dynamic-deploy.sed deploy/development/app-service-dyn.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/admin-deployment.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/dashboard-deployment.yaml
             sed -i -e s/:latest/:$CIRCLE_SHA1/ deploy/development/grc-clamav-deployment.yaml
